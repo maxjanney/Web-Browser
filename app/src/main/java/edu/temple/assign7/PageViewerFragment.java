@@ -25,7 +25,6 @@ public class PageViewerFragment extends Fragment {
         if (savedInstanceState != null) {
             myWebView.restoreState(savedInstanceState);
         }
-        myWebView = root.findViewById(R.id.web_view);
         myWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
