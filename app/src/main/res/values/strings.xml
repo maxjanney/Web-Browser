@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">Assign 7</string>
+    <string name="app_name">Web</string>
+    <string name="url_hint">Enter a url</string>
+    <string name="search_desc">Search</string>
+    <string name="back_desc">Back</string>
+    <string name="forward_desc">Forward</string>
 </resources>
