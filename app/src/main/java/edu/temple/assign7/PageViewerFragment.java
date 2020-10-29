@@ -6,7 +6,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import android.text.style.UpdateLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +24,7 @@ public class PageViewerFragment extends Fragment {
         if (context instanceof UpdateUrl) {
             parentActivity = (UpdateUrl) context;
         } else {
-            throw new RuntimeException("Must implement SetURL interface");
+            throw new RuntimeException("Activity must implement UpdateUrl interface");
         }
     }
 

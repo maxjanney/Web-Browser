@@ -22,7 +22,7 @@ public class PageControlFragment extends Fragment {
         if (context instanceof BrowserButtons) {
             parentLayout = (BrowserButtons) context;
         } else {
-            throw new RuntimeException("Activity must implement SearchURL interface");
+            throw new RuntimeException("Activity must implement BrowserButtons interface");
         }
     }
 
