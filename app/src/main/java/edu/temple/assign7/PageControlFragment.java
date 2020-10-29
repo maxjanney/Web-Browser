@@ -26,26 +26,30 @@ public class PageControlFragment extends Fragment {
         }
     }
 
-    /*
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
-    }
-    */
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         View root = inflater.inflate(R.layout.fragment_page_control, container, false);
 
         url = root.findViewById(R.id.url);
-        root.findViewById(R.id.go).setOnClickListener((v) -> parentLayout.loadUrl(url.getText().toString()));
+        root.findViewById(R.id.go).setOnClickListener((v) -> parentLayout.loadUrl(fixUrl(url.getText().toString())));
         root.findViewById(R.id.back).setOnClickListener((v) -> parentLayout.goBack());
         root.findViewById(R.id.next).setOnClickListener((v) -> parentLayout.goForward());
 
         return root;
+    }
+
+    public void setUrl(String url) {
+        this.url.setText(url);
+    }
+
+    private String fixUrl(String url) {
+        url = url.toLowerCase();
+        if (!(url.startsWith("https://") || url.startsWith("http://"))) {
+            url = "https://" + url;
+        }
+        return url;
     }
 
     interface BrowserButtons {

@@ -5,7 +5,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class BrowserActivity extends AppCompatActivity implements PageControlFragment.BrowserButtons {
+public class BrowserActivity extends AppCompatActivity implements PageControlFragment.BrowserButtons,
+        PageViewerFragment.UpdateUrl {
 
     private PageViewerFragment pageViewer;
     private PageControlFragment pageControl;
@@ -15,7 +16,7 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (savedInstanceState == null) {   // create new
+        if (savedInstanceState == null) {
             pageViewer = new PageViewerFragment();
             pageControl = new PageControlFragment();
             getSupportFragmentManager()
@@ -23,7 +24,7 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
                     .add(R.id.page_control, pageControl)
                     .add(R.id.page_viewer, pageViewer)
                     .commit();
-        } else {    // restore
+        } else {
             pageViewer = (PageViewerFragment) getSupportFragmentManager().getFragment(savedInstanceState, "pageViewer");
             pageControl = (PageControlFragment) getSupportFragmentManager().getFragment(savedInstanceState, "pageControl");
         }
@@ -34,6 +35,11 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
         super.onSaveInstanceState(outState);
         getSupportFragmentManager().putFragment(outState, "pageViewer", pageViewer);
         getSupportFragmentManager().putFragment(outState, "pageControl", pageControl);
+    }
+
+    @Override
+    public void updateUrl(String url) {
+        pageControl.setUrl(url);
     }
 
     @Override
