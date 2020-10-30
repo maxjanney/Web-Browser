@@ -5,8 +5,8 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-public class BrowserActivity extends AppCompatActivity implements PageControlFragment.BrowserButtons,
-        PageViewerFragment.UpdateUrl {
+public class BrowserActivity extends AppCompatActivity implements PageControlFragment.PageControl,
+        PageViewerFragment.PageViewer {
 
     private PageViewerFragment pageViewer;
     private PageControlFragment pageControl;
