@@ -10,19 +10,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 public class PageControlFragment extends Fragment {
 
-    private EditText url;
-    private BrowserButtons parentLayout;
+    private EditText urlEditText;
+    private ImageButton goButton, backButton, nextButton;
+    private PageControl parentLayout;
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof BrowserButtons) {
-            parentLayout = (BrowserButtons) context;
+        if (context instanceof PageControl) {
+            parentLayout = (PageControl) context;
         } else {
-            throw new RuntimeException("Activity must implement BrowserButtons interface");
+            throw new RuntimeException("Activity must implement PageControl interface");
         }
     }
 
@@ -31,28 +33,39 @@ public class PageControlFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_page_control, container, false);
+        urlEditText = root.findViewById(R.id.url);
+        goButton = root.findViewById(R.id.go);
+        backButton = root.findViewById(R.id.back);
+        nextButton = root.findViewById(R.id.next);
 
-        url = root.findViewById(R.id.url);
-        root.findViewById(R.id.go).setOnClickListener((v) -> parentLayout.loadUrl(fixUrl(url.getText().toString())));
-        root.findViewById(R.id.back).setOnClickListener((v) -> parentLayout.goBack());
-        root.findViewById(R.id.next).setOnClickListener((v) -> parentLayout.goForward());
+        View.OnClickListener onClick = ((v -> {
+            if (v.equals(goButton))
+                parentLayout.loadUrl(fixUrl(urlEditText.getText().toString()));
+            else if (v.equals(backButton))
+                parentLayout.goBack();
+            else if (v.equals(nextButton))
+                parentLayout.goForward();
+        }));
+
+        goButton.setOnClickListener(onClick);
+        backButton.setOnClickListener(onClick);
+        nextButton.setOnClickListener(onClick);
 
         return root;
     }
 
     public void setUrl(String url) {
-        this.url.setText(url);
+        urlEditText.setText(url);
     }
 
     private String fixUrl(String url) {
-        url = url.toLowerCase();
         if (!(url.startsWith("https://") || url.startsWith("http://"))) {
             url = "https://" + url;
         }
         return url;
     }
 
-    interface BrowserButtons {
+    interface PageControl {
         // load the url in a WebView
         void loadUrl(String url);
 

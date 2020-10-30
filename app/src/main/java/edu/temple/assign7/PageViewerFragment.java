@@ -1,6 +1,8 @@
 package edu.temple.assign7;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,42 +11,43 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 public class PageViewerFragment extends Fragment {
 
     private WebView myWebView;
-    private UpdateUrl parentActivity;
+    private PageViewer parentActivity;
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof UpdateUrl) {
-            parentActivity = (UpdateUrl) context;
+        if (context instanceof PageViewer) {
+            parentActivity = (PageViewer) context;
         } else {
             throw new RuntimeException("Activity must implement UpdateUrl interface");
         }
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.fragment_page_viewer, container, false);
         myWebView = root.findViewById(R.id.web_view);
+        myWebView.getSettings().setJavaScriptEnabled(true);
+        myWebView.setWebViewClient(new WebViewClient() {
+           @Override
+           public void onPageStarted(WebView view, String url, Bitmap favicon) {
+               super.onPageStarted(view, url, favicon);
+               parentActivity.updateUrl(url);
+           }
+        });
+
         if (savedInstanceState != null) {
             myWebView.restoreState(savedInstanceState);
         }
-        myWebView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                parentActivity.updateUrl(request.getUrl().toString());
-                return false;
-            }
-        });
-        myWebView.getSettings().setJavaScriptEnabled(true);
 
         return root;
     }
@@ -71,7 +74,7 @@ public class PageViewerFragment extends Fragment {
         }
     }
 
-    interface UpdateUrl {
+    interface PageViewer {
         // update any views using the new url
         void updateUrl(String url);
     }
