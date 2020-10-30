@@ -25,7 +25,7 @@ public class PageViewerFragment extends Fragment {
         if (context instanceof PageViewer) {
             parentActivity = (PageViewer) context;
         } else {
-            throw new RuntimeException("Activity must implement UpdateUrl interface");
+            throw new RuntimeException("Activity must implement PageViewer interface");
         }
     }
 
