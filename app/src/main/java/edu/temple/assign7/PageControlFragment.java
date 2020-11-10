@@ -19,19 +19,17 @@ public class PageControlFragment extends Fragment {
     private PageControl parentLayout;
 
     @Override
-    public void onAttach(@NonNull Context context) {
+    public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof PageControl) {
+        if (context instanceof PageControl) 
             parentLayout = (PageControl) context;
-        } else {
+        else 
             throw new RuntimeException("Activity must implement PageControl interface");
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View root = inflater.inflate(R.layout.fragment_page_control, container, false);
         urlEditText = root.findViewById(R.id.url);
         goButton = root.findViewById(R.id.go);
@@ -59,9 +57,8 @@ public class PageControlFragment extends Fragment {
     }
 
     private String fixUrl(String url) {
-        if (!(url.startsWith("https://") || url.startsWith("http://"))) {
+        if (!(url.startsWith("https://") || url.startsWith("http://")))
             url = "https://" + url;
-        }
         return url;
     }
 

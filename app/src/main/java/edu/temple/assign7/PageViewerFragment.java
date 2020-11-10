@@ -1,6 +1,5 @@
 package edu.temple.assign7;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -22,18 +21,15 @@ public class PageViewerFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof PageViewer) {
+        if (context instanceof PageViewer)
             parentActivity = (PageViewer) context;
-        } else {
+        else 
             throw new RuntimeException("Activity must implement PageViewer interface");
-        }
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View root = inflater.inflate(R.layout.fragment_page_viewer, container, false);
         myWebView = root.findViewById(R.id.web_view);
         myWebView.getSettings().setJavaScriptEnabled(true);
@@ -41,14 +37,14 @@ public class PageViewerFragment extends Fragment {
            @Override
            public void onPageStarted(WebView view, String url, Bitmap favicon) {
                super.onPageStarted(view, url, favicon);
-               parentActivity.updateUrl(url);
+               if (url != null)
+                   parentActivity.updateUrl(url);
            }
         });
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null) 
             myWebView.restoreState(savedInstanceState);
-        }
-
+            
         return root;
     }
 
@@ -63,15 +59,11 @@ public class PageViewerFragment extends Fragment {
     }
 
     public void goBack() {
-        if (myWebView.canGoBack()) {
-            myWebView.goBack();
-        }
+        myWebView.goBack();
     }
 
     public void goForward() {
-        if (myWebView.canGoForward()) {
-            myWebView.goForward();
-        }
+        myWebView.goForward();
     }
 
     interface PageViewer {
