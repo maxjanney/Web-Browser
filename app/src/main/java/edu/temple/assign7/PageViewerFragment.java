@@ -7,16 +7,19 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-public class PageViewerFragment extends Fragment {
+import java.io.Serializable;
 
-    private WebView myWebView;
-    private PageViewer parentActivity;
+public class PageViewerFragment extends Fragment implements Serializable {
+
+    WebView myWebView;
+    PageViewer parentActivity;
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -37,8 +40,7 @@ public class PageViewerFragment extends Fragment {
            @Override
            public void onPageStarted(WebView view, String url, Bitmap favicon) {
                super.onPageStarted(view, url, favicon);
-               if (url != null)
-                   parentActivity.updateUrl(url);
+               parentActivity.updateUrl(url);
            }
         });
 

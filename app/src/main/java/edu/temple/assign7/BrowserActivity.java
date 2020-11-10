@@ -31,6 +31,7 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
                     .add(R.id.browser_control, new BrowserControlFragment())
                     .commit();
         } else {
+            pager = (PagerFragment) getSupportFragmentManager().getFragment(savedInstanceState, "pager");
             pageControl = (PageControlFragment) getSupportFragmentManager().getFragment(savedInstanceState, "pageControl");
         }
     }
@@ -38,6 +39,7 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        getSupportFragmentManager().putFragment(outState, "pager", pager);
         getSupportFragmentManager().putFragment(outState, "pageControl", pageControl);
     }
 
