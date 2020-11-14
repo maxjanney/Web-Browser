@@ -9,9 +9,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 
 public class BrowserActivity extends AppCompatActivity implements PageControlFragment.PageControl,
-        PageViewerFragment.PageViewer, BrowserControlFragment.BrowserControl {
+        PageViewerFragment.PageViewerInterface, BrowserControlFragment.BrowserControl {
 
-    // list of current pages
     private PageControlFragment pageControl;
     private PagerFragment pager;
 
@@ -22,7 +21,7 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
 
         // creating for first time
         if (savedInstanceState == null) {
-            pager = new PagerFragment();
+            pager = PagerFragment.newInstance(new ArrayList<PageViewerFragment>());
             pageControl = new PageControlFragment();
             getSupportFragmentManager()
                     .beginTransaction()
@@ -45,27 +44,27 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
 
     @Override
     public void updateUrl(String url) {
-        pageControl.setUrl(url);
+        pageControl.updateUrl(url);
     }
 
     @Override
     public void loadUrl(String url) {
-        pager.currentPage().loadUrl(url);
+        pager.loadUrl(url);
     }
 
     @Override
     public void goBack() {
-        pager.currentPage().goBack();
+        pager.goBack();
     }
 
     @Override
     public void goForward() {
-        pager.currentPage().goForward();
+        pager.goForward();
     }
 
     @Override
     public void addNewPage() {
         pager.addNewPage();
-        pageControl.setUrl("");
+        pageControl.updateUrl("");
     }
 }

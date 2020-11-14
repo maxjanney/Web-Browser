@@ -19,21 +19,22 @@ import java.io.Serializable;
 public class PageViewerFragment extends Fragment implements Serializable {
 
     WebView myWebView;
-    PageViewer parentActivity;
+    PageViewerInterface parentActivity;
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof PageViewer)
-            parentActivity = (PageViewer) context;
+        if (context instanceof PageViewerInterface)
+            parentActivity = (PageViewerInterface) context;
         else 
-            throw new RuntimeException("Activity must implement PageViewer interface");
+            throw new RuntimeException("Activity must implement PageViewerInterace");
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_page_viewer, container, false);
+
         myWebView = root.findViewById(R.id.web_view);
         myWebView.getSettings().setJavaScriptEnabled(true);
         myWebView.setWebViewClient(new WebViewClient() {
@@ -56,19 +57,7 @@ public class PageViewerFragment extends Fragment implements Serializable {
         myWebView.saveState(outState);
     }
 
-    public void loadUrl(String url) {
-        myWebView.loadUrl(url);
-    }
-
-    public void goBack() {
-        myWebView.goBack();
-    }
-
-    public void goForward() {
-        myWebView.goForward();
-    }
-
-    interface PageViewer {
+    interface PageViewerInterface {
         // update any views using the new url
         void updateUrl(String url);
     }

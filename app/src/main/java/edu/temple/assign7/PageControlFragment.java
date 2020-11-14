@@ -52,7 +52,7 @@ public class PageControlFragment extends Fragment {
         return root;
     }
 
-    public void setUrl(String url) {
+    public void updateUrl(String url) {
         urlEditText.setText(url);
     }
 
