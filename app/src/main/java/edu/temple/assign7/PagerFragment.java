@@ -18,9 +18,7 @@ import java.util.Objects;
 public class PagerFragment extends Fragment {
 
     private PagerInterface browserActivity;
-
     private ViewPager viewPager;
-
     private ArrayList<PageViewerFragment> pages;
 
     private static final String PAGES_KEY = "pages";
@@ -41,11 +39,6 @@ public class PagerFragment extends Fragment {
         if (getArguments() != null) {
             pages = (ArrayList) getArguments().getSerializable(PAGES_KEY);
         }
-    }
-
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
     }
 
     @Override

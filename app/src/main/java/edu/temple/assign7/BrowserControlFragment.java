@@ -32,8 +32,9 @@ public class BrowserControlFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View l = inflater.inflate(R.layout.fragment_browser_control, container, false);
-        final ImageButton newPageButton = l.findViewById(R.id.newPageButton);
+        View root = inflater.inflate(R.layout.fragment_browser_control, container, false);
+
+        final ImageButton newPageButton = root.findViewById(R.id.newPageButton);
 
         View.OnClickListener ocl = new View.OnClickListener() {
             @Override
@@ -42,8 +43,10 @@ public class BrowserControlFragment extends Fragment {
                     browserActivity.newPage();
             }
         };
+
         newPageButton.setOnClickListener(ocl);
-        return l;
+
+        return root;
     }
 
     interface BrowserControlInterface {

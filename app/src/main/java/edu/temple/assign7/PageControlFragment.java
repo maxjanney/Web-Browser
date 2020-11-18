@@ -27,11 +27,10 @@ public class PageControlFragment extends Fragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
-        if (context instanceof PageControlInterface) {
+        if (context instanceof PageControlInterface)
             browserActivity = (PageControlInterface) context;
-        } else {
+        else
             throw new RuntimeException("You must implement the required interface");
-        }
     }
 
     @Override

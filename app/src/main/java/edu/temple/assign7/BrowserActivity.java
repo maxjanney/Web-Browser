@@ -90,6 +90,12 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(PAGES_KEY, pages);
+    }
+
     private void clearIdentifiers() {
         if (getSupportActionBar() != null)
             getSupportActionBar().setTitle("");
@@ -101,12 +107,6 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
         pagerFragment.notifyWebsitesChanged();
         if (listMode)
             pageListFragment.notifyWebsitesChanged();
-    }
-
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putSerializable(PAGES_KEY, pages);
     }
 
     @Override

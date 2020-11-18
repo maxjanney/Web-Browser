@@ -49,6 +49,7 @@ public class PageListAdapter extends BaseAdapter {
         }
 
         textView.setText(pages.get(position).getTitle());
+
         return textView;
     }
 }
