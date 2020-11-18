@@ -1,61 +1,73 @@
 package edu.temple.assign7;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-import androidx.annotation.ArrayRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class PagerFragment extends Fragment {
 
-    private static final String KEY_PAGES = "savedPages";
+    private PagerInterface browserActivity;
 
-    ViewPager viewPager;
-    ArrayList<PageViewerFragment> pages;
+    private ViewPager viewPager;
+
+    private ArrayList<PageViewerFragment> pages;
+
+    private static final String PAGES_KEY = "pages";
+
+    public PagerFragment() {}
 
     public static PagerFragment newInstance(ArrayList<PageViewerFragment> pages) {
-        PagerFragment pagerFragment = new PagerFragment();
-        Bundle bundle = new Bundle();
-        bundle.putSerializable(KEY_PAGES, pages);
-        pagerFragment.setArguments(bundle);
-        return pagerFragment;
+        PagerFragment fragment = new PagerFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(PAGES_KEY, pages);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            pages = (ArrayList) getArguments().getSerializable(PAGES_KEY);
+        }
+    }
 
-        Bundle bundle;
-        if ((bundle = getArguments()) != null) {
-            pages = (ArrayList<PageViewerFragment>) bundle.getSerializable(KEY_PAGES);
-            pages.add(new PageViewerFragment());
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        if (context instanceof PagerInterface) {
+            browserActivity = (PagerInterface) context;
+        } else {
+            throw new RuntimeException("You must implement PagerInterface to attach this fragment");
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         View root = inflater.inflate(R.layout.fragment_pager, container, false);
-        viewPager = root.findViewById(R.id.viewpager);
 
-        if (savedInstanceState != null) {
-            pages = (ArrayList<PageViewerFragment>) savedInstanceState.getSerializable(KEY_PAGES);
-        }
+        viewPager = root.findViewById(R.id.viewPager);
 
-        viewPager.setAdapter(new FragmentStatePagerAdapter(getFragmentManager()) {
+        viewPager.setAdapter(new FragmentStatePagerAdapter(getChildFragmentManager()) {
             @NonNull
             @Override
             public Fragment getItem(int position) {
@@ -76,30 +88,57 @@ public class PagerFragment extends Fragment {
             }
         });
 
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
+
+            @Override
+            public void onPageSelected(int position) {
+                browserActivity.updateUrl((pages.get(position)).getUrl());
+                browserActivity.updateTitle((pages.get(position)).getTitle());
+            }
+            @Override
+            public void onPageScrollStateChanged(int state) {}
+        });
+
         return root;
     }
 
-    @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putSerializable(KEY_PAGES, pages);
+    public void notifyWebsitesChanged() {
+        viewPager.getAdapter().notifyDataSetChanged();
     }
 
-    public void loadUrl(String url) {
-        pages.get(viewPager.getCurrentItem()).myWebView.loadUrl(url);
+    public void showPage(int index) {
+        viewPager.setCurrentItem(index);
     }
 
-    public void goBack() {
-        pages.get(viewPager.getCurrentItem()).myWebView.goBack();
+    public void go(String url) {
+        getPageViewer(viewPager.getCurrentItem()).go(url);
     }
 
-    public void goForward() {
-        pages.get(viewPager.getCurrentItem()).myWebView.goForward();
+    public void back() {
+        getPageViewer(viewPager.getCurrentItem()).back();
     }
 
-    public void addNewPage() {
-        pages.add(new PageViewerFragment());
-        Objects.requireNonNull(viewPager.getAdapter()).notifyDataSetChanged();
-        viewPager.setCurrentItem(pages.size() - 1);
+    public void forward() {
+        getPageViewer(viewPager.getCurrentItem()).forward();
+    }
+
+    public String getCurrentUrl() {
+        return getPageViewer(viewPager.getCurrentItem()).getUrl();
+    }
+
+    public String getCurrentTitle() {
+        return getPageViewer(viewPager.getCurrentItem()).getTitle();
+    }
+
+    private PageViewerFragment getPageViewer(int position) {
+        return (PageViewerFragment) ((FragmentStatePagerAdapter) viewPager.getAdapter()).getItem(position);
+    }
+
+    interface PagerInterface {
+        void updateUrl(String url);
+        void updateTitle(String title);
     }
 }

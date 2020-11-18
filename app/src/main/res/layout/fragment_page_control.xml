@@ -1,40 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/parent"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:layout_height="wrap_content"
+    tools:context=".PageControlFragment">
 
     <EditText
-        android:id="@+id/url"
-        android:layout_width="wrap_content"
+        android:id="@+id/urlTextView"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:autofillHints=""
-        android:paddingRight="180dp"
-        android:hint="@string/url_hint"
+        android:ems="10"
         android:inputType="textUri"
-        tools:ignore="RtlSymmetry" />
+        app:layout_constraintBottom_toBottomOf="@+id/goButton"
+        app:layout_constraintEnd_toStartOf="@+id/goButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/backButton"
+        android:hint="@string/url_hint"
+        android:autofillHints="" />
 
     <ImageButton
-        android:id="@+id/go"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/search_desc"
-        android:src="@drawable/ic_baseline_search_24" />
-
-    <ImageButton
-        android:id="@+id/back"
-        android:layout_width="wrap_content"
+        android:id="@+id/backButton"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_baseline_arrow_back_24"
-        android:contentDescription="@string/back_desc" />
+        android:contentDescription="@string/back_desc"
+        app:layout_constraintBottom_toBottomOf="@+id/forwardButton"
+        app:layout_constraintEnd_toStartOf="@+id/guideline"
+        app:layout_constraintStart_toEndOf="@+id/guideline2"
+        app:layout_constraintTop_toTopOf="@+id/forwardButton" />
 
     <ImageButton
-        android:id="@+id/next"
+        android:id="@+id/forwardButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_baseline_arrow_forward_24"
+        android:contentDescription="@string/forward_desc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/guideline"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/goButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/ic_baseline_search_24"
+        android:contentDescription="@string/search_desc"
+        app:layout_constraintBottom_toBottomOf="@+id/backButton"
+        app:layout_constraintEnd_toStartOf="@+id/guideline2"
+        app:layout_constraintStart_toStartOf="@+id/guideline3"
+        app:layout_constraintTop_toTopOf="@+id/backButton" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="@string/forward_desc"
-        android:src="@drawable/ic_baseline_arrow_forward_24" />
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="55dp" />
 
-</LinearLayout>
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="110dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="165dp" />
+</androidx.constraintlayout.widget.ConstraintLayout>

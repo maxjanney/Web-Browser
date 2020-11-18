@@ -1,70 +1,167 @@
 package edu.temple.assign7;
 
+import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
 
-public class BrowserActivity extends AppCompatActivity implements PageControlFragment.PageControl,
-        PageViewerFragment.PageViewerInterface, BrowserControlFragment.BrowserControl {
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
-    private PageControlFragment pageControl;
-    private PagerFragment pager;
+import android.os.Bundle;
+
+import java.util.ArrayList;
+
+public class BrowserActivity extends AppCompatActivity implements PageControlFragment.PageControlInterface, PageViewerFragment.PageViewerInterface, BrowserControlFragment.BrowserControlInterface, PagerFragment.PagerInterface, PageListFragment.PageListInterface {
+
+    FragmentManager fm;
+
+    private final String PAGES_KEY = "pages";
+
+    PageControlFragment pageControlFragment;
+    BrowserControlFragment browserControlFragment;
+    PageListFragment pageListFragment;
+    PagerFragment pagerFragment;
+
+    ArrayList<PageViewerFragment> pages;
+
+    boolean listMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // creating for first time
-        if (savedInstanceState == null) {
-            pager = PagerFragment.newInstance(new ArrayList<PageViewerFragment>());
-            pageControl = new PageControlFragment();
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.page_control, pageControl)
-                    .add(R.id.page_display, pager)
-                    .add(R.id.browser_control, new BrowserControlFragment())
+        if (savedInstanceState != null)
+            pages = (ArrayList) savedInstanceState.getSerializable(PAGES_KEY);
+        else
+            pages = new ArrayList<>();
+
+        fm = getSupportFragmentManager();
+
+        listMode = findViewById(R.id.page_list) != null;
+
+        Fragment tmpFragment;
+
+        if ((tmpFragment = fm.findFragmentById(R.id.page_control)) instanceof PageControlFragment)
+            pageControlFragment = (PageControlFragment) tmpFragment;
+        else {
+            pageControlFragment = new PageControlFragment();
+            fm.beginTransaction()
+                    .add(R.id.page_control, pageControlFragment)
                     .commit();
-        } else {
-            pager = (PagerFragment) getSupportFragmentManager().getFragment(savedInstanceState, "pager");
-            pageControl = (PageControlFragment) getSupportFragmentManager().getFragment(savedInstanceState, "pageControl");
+        }
+
+        if ((tmpFragment = fm.findFragmentById(R.id.browser_control)) instanceof BrowserControlFragment)
+            browserControlFragment = (BrowserControlFragment) tmpFragment;
+        else {
+            browserControlFragment = new BrowserControlFragment();
+            fm.beginTransaction()
+                    .add(R.id.browser_control, browserControlFragment)
+                    .commit();
+        }
+
+        if ((tmpFragment = fm.findFragmentById(R.id.page_viewer)) instanceof PagerFragment)
+            pagerFragment = (PagerFragment) tmpFragment;
+        else {
+            pagerFragment = PagerFragment.newInstance(pages);
+            fm.beginTransaction()
+                    .add(R.id.page_viewer, pagerFragment)
+                    .commit();
+        }
+
+        if (listMode) {
+            if ((tmpFragment = fm.findFragmentById(R.id.page_list)) instanceof PageListFragment)
+                pageListFragment = (PageListFragment) tmpFragment;
+            else {
+                pageListFragment = PageListFragment.newInstance(pages);
+                fm.beginTransaction()
+                        .add(R.id.page_list, pageListFragment)
+                        .commit();
+            }
         }
     }
 
+    private void clearIdentifiers() {
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setTitle("");
+        pageControlFragment.updateUrl("");
+    }
+
+    // Notify all observers of collections
+    private void notifyWebsitesChanged() {
+        pagerFragment.notifyWebsitesChanged();
+        if (listMode)
+            pageListFragment.notifyWebsitesChanged();
+    }
+
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        getSupportFragmentManager().putFragment(outState, "pager", pager);
-        getSupportFragmentManager().putFragment(outState, "pageControl", pageControl);
+        outState.putSerializable(PAGES_KEY, pages);
+    }
+
+    @Override
+    public void go(String url) {
+        if (pages.size() > 0)
+            pagerFragment.go(url);
+        else {
+            pages.add(PageViewerFragment.newInstance(url));
+            notifyWebsitesChanged();
+            pagerFragment.showPage(pages.size() - 1);
+        }
+
+    }
+
+    @Override
+    public void back() {
+        pagerFragment.back();
+    }
+
+    @Override
+    public void forward() {
+        pagerFragment.forward();
     }
 
     @Override
     public void updateUrl(String url) {
-        pageControl.updateUrl(url);
+        if (url != null && url.equals(pagerFragment.getCurrentUrl())) {
+            pageControlFragment.updateUrl(url);
+            // Update the ListView in the PageListFragment - results in updated titles
+            notifyWebsitesChanged();
+        }
     }
 
     @Override
-    public void loadUrl(String url) {
-        pager.loadUrl(url);
+    public void updateTitle(String title) {
+        if (title != null && title.equals(pagerFragment.getCurrentTitle()) && getSupportActionBar() != null)
+            getSupportActionBar().setTitle(title);
+        // Results in the ListView in PageListFragment being updated
+        notifyWebsitesChanged();
     }
 
     @Override
-    public void goBack() {
-        pager.goBack();
+    public void newPage() {
+        // Add page to list
+        pages.add(new PageViewerFragment());
+        // Update all necessary views
+        notifyWebsitesChanged();
+        // Display the newly created page
+        pagerFragment.showPage(pages.size() - 1);
+        // Clear the displayed URL in PageControlFragment and title in the activity
+        clearIdentifiers();
     }
 
     @Override
-    public void goForward() {
-        pager.goForward();
-    }
-
-    @Override
-    public void addNewPage() {
-        pager.addNewPage();
-        pageControl.updateUrl("");
+    public void pageSelected(int position) {
+        pagerFragment.showPage(position);
     }
 }

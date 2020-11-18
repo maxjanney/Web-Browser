@@ -11,65 +11,74 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 public class PageControlFragment extends Fragment {
 
-    private EditText urlEditText;
-    private ImageButton goButton, backButton, nextButton;
-    private PageControl parentLayout;
+    private ImageButton goButton, backButton, forwardButton;
+    private TextView urlTextView;
+
+    private PageControlInterface browserActivity;
+
+    public PageControlFragment() {
+    }
 
     @Override
-    public void onAttach(Context context) {
+    public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof PageControl) 
-            parentLayout = (PageControl) context;
-        else 
-            throw new RuntimeException("Activity must implement PageControl interface");
+
+        if (context instanceof PageControlInterface) {
+            browserActivity = (PageControlInterface) context;
+        } else {
+            throw new RuntimeException("You must implement the required interface");
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View root = inflater.inflate(R.layout.fragment_page_control, container, false);
-        urlEditText = root.findViewById(R.id.url);
-        goButton = root.findViewById(R.id.go);
-        backButton = root.findViewById(R.id.back);
-        nextButton = root.findViewById(R.id.next);
 
-        View.OnClickListener onClick = ((v -> {
-            if (v.equals(goButton))
-                parentLayout.loadUrl(fixUrl(urlEditText.getText().toString()));
-            else if (v.equals(backButton))
-                parentLayout.goBack();
-            else if (v.equals(nextButton))
-                parentLayout.goForward();
-        }));
+        urlTextView = root.findViewById(R.id.urlTextView);
+        goButton = root.findViewById(R.id.goButton);
+        backButton = root.findViewById(R.id.backButton);
+        forwardButton = root.findViewById(R.id.forwardButton);
 
-        goButton.setOnClickListener(onClick);
-        backButton.setOnClickListener(onClick);
-        nextButton.setOnClickListener(onClick);
+        View.OnClickListener controlOcl = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (v.equals(goButton))
+                    browserActivity.go(formatUrl(urlTextView.getText().toString()));
+                else if (v.equals(backButton))
+                    browserActivity.back();
+                else if (v.equals(forwardButton))
+                    browserActivity.forward();
+            }
+        };
+
+        goButton.setOnClickListener(controlOcl);
+        backButton.setOnClickListener(controlOcl);
+        forwardButton.setOnClickListener(controlOcl);
 
         return root;
     }
 
     public void updateUrl(String url) {
-        urlEditText.setText(url);
+        urlTextView.setText(url);
     }
 
-    private String fixUrl(String url) {
-        if (!(url.startsWith("https://") || url.startsWith("http://")))
-            url = "https://" + url;
-        return url;
+    private String formatUrl(String url) {
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+            return "https://" + url;
+        } else {
+            return url;
+        }
     }
 
-    interface PageControl {
-        // load the url in a WebView
-        void loadUrl(String url);
-
-        // go back in the WebView
-        void goBack();
-
-        // go forward in the WebView
-        void goForward();
+    interface PageControlInterface {
+        void go(String url);
+        void back();
+        void forward();
     }
 }

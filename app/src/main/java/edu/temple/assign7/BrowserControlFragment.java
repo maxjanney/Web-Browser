@@ -9,38 +9,44 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 public class BrowserControlFragment extends Fragment {
 
-    BrowserControl parentActivity;
+    private BrowserControlInterface browserActivity;
+
+    public BrowserControlFragment() {}
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof BrowserControl)
-            parentActivity = (BrowserControl) context;
-        else
-            throw new RuntimeException("Must implement BrowserControl interface");
+
+        if (context instanceof BrowserControlInterface) {
+            browserActivity = (BrowserControlInterface) context;
+        } else {
+            throw new RuntimeException("Cannot manage windows if interface not BrowserControlInterface implemented");
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View root = inflater.inflate(R.layout.fragment_browser_control, container, false);
+        View l = inflater.inflate(R.layout.fragment_browser_control, container, false);
+        final ImageButton newPageButton = l.findViewById(R.id.newPageButton);
 
-        root.findViewById(R.id.new_page).setOnClickListener(new View.OnClickListener() {
+        View.OnClickListener ocl = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                parentActivity.addNewPage();
+                if (v.equals(newPageButton))
+                    browserActivity.newPage();
             }
-        });
-
-        return root;
+        };
+        newPageButton.setOnClickListener(ocl);
+        return l;
     }
 
-    interface BrowserControl {
-        // add a new page when pressed
-        void addNewPage();
+    interface BrowserControlInterface {
+        void newPage();
     }
 }
