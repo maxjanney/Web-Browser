@@ -66,7 +66,7 @@ public class BookmarkAdapter extends BaseAdapter implements Serializable {
         titleText.setOnClickListener(v -> sendUrl(position));
 
         deleteButton.setOnClickListener(v -> new AlertDialog.Builder(context)
-                .setTitle("Delete " + titles.get(position) + "?")
+                .setTitle(context.getResources().getString(R.string.dialog, titles.get(position)))
                 .setPositiveButton(R.string.ok,((dialog, which) -> delete(position)))
                 .setNegativeButton(R.string.cancel, null)
                 .show());
