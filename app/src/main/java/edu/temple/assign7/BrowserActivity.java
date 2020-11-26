@@ -103,12 +103,6 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
         outState.putSerializable(KeyUtils.PAGES_KEY, pages);
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-    }
-
     private void clearIdentifiers() {
         if (getSupportActionBar() != null)
             getSupportActionBar().setTitle("");
@@ -174,7 +168,6 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
     @Override
     public void savePage() {
         if (pages.size() > 0) {
-
             String title = pagerFragment.getCurrentTitle();
             String url = pagerFragment.getCurrentUrl();
 

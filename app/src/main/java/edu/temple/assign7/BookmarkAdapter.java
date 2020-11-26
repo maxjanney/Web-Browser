@@ -74,14 +74,6 @@ public class BookmarkAdapter extends BaseAdapter implements Serializable {
         return convertView;
     }
 
-    public void delete(int position) {
-        context.getSharedPreferences(KeyUtils.FILE_KEY, 0)
-                .edit()
-                .remove(titles.get(position))
-                .apply();
-        deleteEntry(position);
-    }
-
     private void sendUrl(int position) {
         Intent response = new Intent();
         response.putExtra(KeyUtils.URL_RESULT_KEY, urls.get(position));
@@ -90,6 +82,14 @@ public class BookmarkAdapter extends BaseAdapter implements Serializable {
 
         activity.setResult(Activity.RESULT_OK, response);
         activity.finish();
+    }
+
+    public void delete(int position) {
+        context.getSharedPreferences(KeyUtils.FILE_KEY, 0)
+                .edit()
+                .remove(titles.get(position))
+                .apply();
+        deleteEntry(position);
     }
 
     private void deleteEntry(int position) {
