@@ -1,5 +1,7 @@
 package edu.temple.assign7;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
 
@@ -9,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import java.io.Serializable;
+import java.net.URL;
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
@@ -17,14 +21,17 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.ActionMenuView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class BrowserActivity extends AppCompatActivity implements PageControlFragment.PageControlInterface, PageViewerFragment.PageViewerInterface, BrowserControlFragment.BrowserControlInterface, PagerFragment.PagerInterface, PageListFragment.PageListInterface {
+public class BrowserActivity extends AppCompatActivity implements PageControlFragment.PageControlInterface,
+        PageViewerFragment.PageViewerInterface, BrowserControlFragment.BrowserControlInterface,
+        PagerFragment.PagerInterface, PageListFragment.PageListInterface, Serializable {
 
     FragmentManager fm;
-
-    private final String PAGES_KEY = "pages";
 
     PageControlFragment pageControlFragment;
     BrowserControlFragment browserControlFragment;
@@ -41,7 +48,7 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
         setContentView(R.layout.activity_main);
 
         if (savedInstanceState != null)
-            pages = (ArrayList) savedInstanceState.getSerializable(PAGES_KEY);
+            pages = (ArrayList<PageViewerFragment>) savedInstanceState.getSerializable(KeyUtils.PAGES_KEY);
         else
             pages = new ArrayList<>();
 
@@ -93,7 +100,13 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putSerializable(PAGES_KEY, pages);
+        outState.putSerializable(KeyUtils.PAGES_KEY, pages);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
     }
 
     private void clearIdentifiers() {
@@ -118,7 +131,6 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
             notifyWebsitesChanged();
             pagerFragment.showPage(pages.size() - 1);
         }
-
     }
 
     @Override
@@ -144,7 +156,6 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
     public void updateTitle(String title) {
         if (title != null && title.equals(pagerFragment.getCurrentTitle()) && getSupportActionBar() != null)
             getSupportActionBar().setTitle(title);
-        // Results in the ListView in PageListFragment being updated
         notifyWebsitesChanged();
     }
 
@@ -161,7 +172,50 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
     }
 
     @Override
+    public void savePage() {
+        if (pages.size() > 0) {
+
+            String title = pagerFragment.getCurrentTitle();
+            String url = pagerFragment.getCurrentUrl();
+
+            if (title != null && url != null && !title.isEmpty() && !url.isEmpty()) {
+                getSharedPreferences(KeyUtils.FILE_KEY, 0)
+                        .edit()
+                        .putString(title, url)
+                        .apply();
+                Toast.makeText(BrowserActivity.this, "Saving bookmark!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    @Override
+    public void showBookmarks() {
+        startActivityForResult(new Intent(BrowserActivity.this, BookmarkActivity.class), KeyUtils.LAUNCH_BOOKMARK_ACTIVITY);
+    }
+
+    @Override
     public void pageSelected(int position) {
         pagerFragment.showPage(position);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == KeyUtils.LAUNCH_BOOKMARK_ACTIVITY && resultCode == Activity.RESULT_OK) {
+            Bundle extras = null;
+
+            if (data != null)
+                extras = data.getExtras();
+
+            String url = "";
+
+            if (extras != null)
+                url = extras.getString(KeyUtils.URL_RESULT_KEY);
+
+            // display the corresponding
+            // url in the current page
+            go(url);
+        }
     }
 }

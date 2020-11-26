@@ -7,9 +7,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class PageListAdapter extends BaseAdapter {
+public class PageListAdapter extends BaseAdapter implements Serializable {
 
     private Context context;
     private ArrayList<PageViewerFragment> pages;
@@ -39,9 +40,9 @@ public class PageListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         TextView textView;
 
-        if (convertView instanceof TextView) {
+        if (convertView instanceof TextView)
             textView = (TextView) convertView;
-        } else {
+        else {
             textView = new TextView(context);
             textView.setPadding(5,8,8,5);
             textView.setGravity(Gravity.CENTER);

@@ -14,23 +14,22 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class PageListFragment extends Fragment {
+public class PageListFragment extends Fragment implements Serializable {
 
     private PageListInterface browserActivity;
 
     private ListView listView;
     private ArrayList<PageViewerFragment> pages;
 
-    private static final String PAGES_KEY = "pages";
-
-    public PageListFragment() {}
+    public PageListFragment() { }
 
     public static PageListFragment newInstance(ArrayList<PageViewerFragment> pages) {
         PageListFragment fragment = new PageListFragment();
         Bundle args = new Bundle();
-        args.putSerializable(PAGES_KEY, pages);
+        args.putSerializable(KeyUtils.PAGES_ARG_KEY, pages);
         fragment.setArguments(args);
         return fragment;
     }
@@ -38,27 +37,25 @@ public class PageListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            pages = (ArrayList) getArguments().getSerializable(PAGES_KEY);
-        }
+        if (getArguments() != null)
+            pages = (ArrayList) getArguments().getSerializable(KeyUtils.PAGES_ARG_KEY);
     }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-
-        if (context instanceof PageListInterface) {
+        if (context instanceof PageListInterface)
             browserActivity = (PageListInterface) context;
-        } else {
+        else
             throw new RuntimeException("You must implement PageListInterface before attaching this fragment");
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         View root = inflater.inflate(R.layout.fragment_page_list, container, false);
+
         listView = root.findViewById(R.id.listView);
         listView.setAdapter(new PageListAdapter(getActivity(), pages));
 
@@ -77,7 +74,7 @@ public class PageListFragment extends Fragment {
             ((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
     }
 
-    interface PageListInterface {
+    interface PageListInterface extends Serializable {
         void pageSelected(int position);
     }
 }

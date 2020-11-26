@@ -13,20 +13,20 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-public class PageControlFragment extends Fragment {
+import java.io.Serializable;
+
+public class PageControlFragment extends Fragment implements Serializable {
 
     private ImageButton goButton, backButton, forwardButton;
     private TextView urlTextView;
 
     private PageControlInterface browserActivity;
 
-    public PageControlFragment() {
-    }
+    public PageControlFragment() { }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-
         if (context instanceof PageControlInterface)
             browserActivity = (PageControlInterface) context;
         else
@@ -68,14 +68,13 @@ public class PageControlFragment extends Fragment {
     }
 
     private String formatUrl(String url) {
-        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+        if (!url.startsWith("http://") && !url.startsWith("https://"))
             return "https://" + url;
-        } else {
+        else
             return url;
-        }
     }
 
-    interface PageControlInterface {
+    interface PageControlInterface extends Serializable {
         void go(String url);
         void back();
         void forward();

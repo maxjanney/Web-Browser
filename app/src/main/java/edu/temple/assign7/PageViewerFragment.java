@@ -3,61 +3,57 @@ package edu.temple.assign7;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.pdf.PdfDocument;
+import android.graphics.pdf.PdfRenderer;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.ServiceWorkerWebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import java.io.Serializable;
 
-public class PageViewerFragment extends Fragment {
+public class PageViewerFragment extends Fragment implements Serializable {
 
-    private static final String URL_KEY = "url";
     private static final int MAX_TITLE_LEN = 30;
 
-    private WebView webView;
+    WebView webView;
     private PageViewerInterface browserActivity;
 
     private String url;
 
+    public PageViewerFragment() { }
 
     public static PageViewerFragment newInstance(String url) {
         PageViewerFragment fragment = new PageViewerFragment();
         Bundle bundle = new Bundle();
-        bundle.putString(URL_KEY, url);
+        bundle.putString(KeyUtils.URL_ARG_KEY, url);
         fragment.setArguments(bundle);
         return fragment;
     }
 
-    public PageViewerFragment() {}
-
-    // Save reference to parent
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-
-        if (context instanceof PageViewerInterface) {
+        if (context instanceof PageViewerInterface)
             browserActivity = (PageViewerInterface) context;
-        } else {
+        else
             throw new RuntimeException("You must implement PageViewerInterface to attach this fragment");
-        }
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (getArguments() != null) {
-            url = getArguments().getString(URL_KEY);
-        }
+        if (getArguments() != null)
+            url = getArguments().getString(KeyUtils.URL_ARG_KEY);
     }
 
     @Override
@@ -66,8 +62,9 @@ public class PageViewerFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_page_viewer, container, false);
 
         webView = root.findViewById(R.id.webView);
+
         webView.getSettings().setJavaScriptEnabled(true);
-        webView.setWebViewClient(new WebViewClient(){
+        webView.setWebViewClient(new WebViewClient() {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
@@ -81,15 +78,13 @@ public class PageViewerFragment extends Fragment {
             }
         });
 
-        // Restore WebView settings
         if (savedInstanceState != null)
             webView.restoreState(savedInstanceState);
         else {
-            if (url != null) {
+            if (url != null)
                 webView.loadUrl(url);
-            } else {
+            else
                 browserActivity.updateUrl("");
-            }
         }
 
         return root;
@@ -138,7 +133,7 @@ public class PageViewerFragment extends Fragment {
             return "";
     }
 
-    interface PageViewerInterface {
+    interface PageViewerInterface extends Serializable {
         void updateUrl(String url);
         void updateTitle(String title);
     }

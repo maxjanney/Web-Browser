@@ -12,23 +12,22 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class PagerFragment extends Fragment {
+public class PagerFragment extends Fragment implements Serializable {
 
     private PagerInterface browserActivity;
     private ViewPager viewPager;
     private ArrayList<PageViewerFragment> pages;
 
-    private static final String PAGES_KEY = "pages";
-
-    public PagerFragment() {}
+    public PagerFragment() { }
 
     public static PagerFragment newInstance(ArrayList<PageViewerFragment> pages) {
         PagerFragment fragment = new PagerFragment();
         Bundle args = new Bundle();
-        args.putSerializable(PAGES_KEY, pages);
+        args.putSerializable(KeyUtils.PAGES_ARG_KEY, pages);
         fragment.setArguments(args);
         return fragment;
     }
@@ -36,20 +35,17 @@ public class PagerFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            pages = (ArrayList) getArguments().getSerializable(PAGES_KEY);
-        }
+        if (getArguments() != null)
+            pages = (ArrayList) getArguments().getSerializable(KeyUtils.PAGES_ARG_KEY);
     }
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-
-        if (context instanceof PagerInterface) {
+        if (context instanceof PagerInterface)
             browserActivity = (PagerInterface) context;
-        } else {
+        else
             throw new RuntimeException("You must implement PagerInterface to attach this fragment");
-        }
     }
 
     @Override
@@ -82,7 +78,6 @@ public class PagerFragment extends Fragment {
         });
 
         viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
 
@@ -91,8 +86,9 @@ public class PagerFragment extends Fragment {
                 browserActivity.updateUrl((pages.get(position)).getUrl());
                 browserActivity.updateTitle((pages.get(position)).getTitle());
             }
+
             @Override
-            public void onPageScrollStateChanged(int state) {}
+            public void onPageScrollStateChanged(int state) { }
         });
 
         return root;
@@ -130,7 +126,7 @@ public class PagerFragment extends Fragment {
         return (PageViewerFragment) ((FragmentStatePagerAdapter) viewPager.getAdapter()).getItem(position);
     }
 
-    interface PagerInterface {
+    interface PagerInterface extends Serializable {
         void updateUrl(String url);
         void updateTitle(String title);
     }
