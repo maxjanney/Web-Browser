@@ -138,9 +138,7 @@ public class PageViewerFragment extends Fragment implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-
-    }
+    public void writeToParcel(Parcel dest, int flags) { }
 
     interface PageViewerInterface {
         void updateUrl(String url);
