@@ -15,14 +15,12 @@ import android.widget.TextView;
 
 import java.io.Serializable;
 
-public class PageControlFragment extends Fragment implements Serializable {
+public class PageControlFragment extends Fragment {
 
     private ImageButton goButton, backButton, forwardButton;
     private TextView urlTextView;
 
     private PageControlInterface browserActivity;
-
-    public PageControlFragment() { }
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -74,7 +72,7 @@ public class PageControlFragment extends Fragment implements Serializable {
             return url;
     }
 
-    interface PageControlInterface extends Serializable {
+    interface PageControlInterface {
         void go(String url);
         void back();
         void forward();

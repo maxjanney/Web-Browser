@@ -17,14 +17,12 @@ import android.widget.ListView;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class PageListFragment extends Fragment implements Serializable {
+public class PageListFragment extends Fragment {
 
     private PageListInterface browserActivity;
 
     private ListView listView;
     private ArrayList<PageViewerFragment> pages;
-
-    public PageListFragment() { }
 
     public static PageListFragment newInstance(ArrayList<PageViewerFragment> pages) {
         PageListFragment fragment = new PageListFragment();
@@ -35,19 +33,19 @@ public class PageListFragment extends Fragment implements Serializable {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null)
-            pages = (ArrayList) getArguments().getSerializable(KeyUtils.PAGES_ARG_KEY);
-    }
-
-    @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (context instanceof PageListInterface)
             browserActivity = (PageListInterface) context;
         else
             throw new RuntimeException("You must implement PageListInterface before attaching this fragment");
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null)
+            pages = (ArrayList) getArguments().getSerializable(KeyUtils.PAGES_ARG_KEY);
     }
 
     @Override
@@ -74,7 +72,7 @@ public class PageListFragment extends Fragment implements Serializable {
             ((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
     }
 
-    interface PageListInterface extends Serializable {
+    interface PageListInterface {
         void pageSelected(int position);
     }
 }

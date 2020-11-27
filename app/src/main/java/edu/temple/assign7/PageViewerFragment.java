@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,7 +22,7 @@ import android.webkit.WebViewClient;
 
 import java.io.Serializable;
 
-public class PageViewerFragment extends Fragment implements Serializable {
+public class PageViewerFragment extends Fragment implements Parcelable {
 
     private static final int MAX_TITLE_LEN = 30;
 
@@ -29,8 +30,6 @@ public class PageViewerFragment extends Fragment implements Serializable {
     private PageViewerInterface browserActivity;
 
     private String url;
-
-    public PageViewerFragment() { }
 
     public static PageViewerFragment newInstance(String url) {
         PageViewerFragment fragment = new PageViewerFragment();
@@ -96,15 +95,15 @@ public class PageViewerFragment extends Fragment implements Serializable {
         webView.saveState(outState);
     }
 
-    public void go (String url) {
+    public void go(String url) {
         webView.loadUrl(url);
     }
 
-    public void back () {
+    public void back() {
         webView.goBack();
     }
 
-    public void forward () {
+    public void forward() {
         webView.goForward();
     }
 
@@ -115,12 +114,12 @@ public class PageViewerFragment extends Fragment implements Serializable {
             if (title == null || title.isEmpty())
                 return webView.getUrl();
             else
-                return shortend(title);
+                return shorten(title);
         } else
             return "Blank Page";
     }
 
-    private String shortend(String title) {
+    private String shorten(String title) {
         if (title.length() > MAX_TITLE_LEN)
             title = title.substring(0, MAX_TITLE_LEN);
         return title;
@@ -133,7 +132,17 @@ public class PageViewerFragment extends Fragment implements Serializable {
             return "";
     }
 
-    interface PageViewerInterface extends Serializable {
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+    }
+
+    interface PageViewerInterface {
         void updateUrl(String url);
         void updateTitle(String title);
     }

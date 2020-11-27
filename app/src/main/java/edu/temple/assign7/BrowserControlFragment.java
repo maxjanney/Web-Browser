@@ -13,11 +13,9 @@ import android.widget.ImageButton;
 
 import java.io.Serializable;
 
-public class BrowserControlFragment extends Fragment implements Serializable {
+public class BrowserControlFragment extends Fragment {
 
     private BrowserControlInterface browserActivity;
-
-    public BrowserControlFragment() { }
 
     @Override
     public void onAttach(@NonNull Context context) {
@@ -57,7 +55,7 @@ public class BrowserControlFragment extends Fragment implements Serializable {
         return root;
     }
 
-    interface BrowserControlInterface extends Serializable {
+    interface BrowserControlInterface {
         void newPage();
         void savePage();
         void showBookmarks();

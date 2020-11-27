@@ -31,6 +31,7 @@ public class BookmarkActivity extends AppCompatActivity {
 
     private void loadTitlesAndUrls() {
         SharedPreferences preferences = getSharedPreferences(KeyUtils.FILE_KEY, 0);
+
         for (Map.Entry<String, ?> entry : preferences.getAll().entrySet()) {
             titles.add(entry.getKey());
             urls.add(entry.getValue().toString());

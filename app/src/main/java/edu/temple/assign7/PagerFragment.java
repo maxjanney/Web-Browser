@@ -16,13 +16,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class PagerFragment extends Fragment implements Serializable {
+public class PagerFragment extends Fragment {
 
     private PagerInterface browserActivity;
     private ViewPager viewPager;
     private ArrayList<PageViewerFragment> pages;
-
-    public PagerFragment() { }
 
     public static PagerFragment newInstance(ArrayList<PageViewerFragment> pages) {
         PagerFragment fragment = new PagerFragment();
@@ -33,19 +31,19 @@ public class PagerFragment extends Fragment implements Serializable {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null)
-            pages = (ArrayList) getArguments().getSerializable(KeyUtils.PAGES_ARG_KEY);
-    }
-
-    @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (context instanceof PagerInterface)
             browserActivity = (PagerInterface) context;
         else
             throw new RuntimeException("You must implement PagerInterface to attach this fragment");
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null)
+            pages = (ArrayList) getArguments().getSerializable(KeyUtils.PAGES_ARG_KEY);
     }
 
     @Override
@@ -126,7 +124,7 @@ public class PagerFragment extends Fragment implements Serializable {
         return (PageViewerFragment) ((FragmentStatePagerAdapter) viewPager.getAdapter()).getItem(position);
     }
 
-    interface PagerInterface extends Serializable {
+    interface PagerInterface {
         void updateUrl(String url);
         void updateTitle(String title);
     }

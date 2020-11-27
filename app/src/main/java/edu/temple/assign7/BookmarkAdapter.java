@@ -17,7 +17,7 @@ import android.widget.TextView;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class BookmarkAdapter extends BaseAdapter implements Serializable {
+public class BookmarkAdapter extends BaseAdapter {
 
     Context context;
 
