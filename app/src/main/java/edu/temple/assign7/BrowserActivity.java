@@ -2,7 +2,6 @@ package edu.temple.assign7;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,18 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import java.io.Serializable;
-import java.net.URL;
 import java.util.ArrayList;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.ActionMenuView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -176,7 +164,7 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
                         .edit()
                         .putString(title, url)
                         .apply();
-                Toast.makeText(BrowserActivity.this, "Saving bookmark!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(BrowserActivity.this, getString(R.string.confirmation), Toast.LENGTH_SHORT).show();
             }
         }
     }

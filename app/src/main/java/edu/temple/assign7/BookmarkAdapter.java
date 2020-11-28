@@ -1,6 +1,5 @@
 package edu.temple.assign7;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -10,11 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 public class BookmarkAdapter extends BaseAdapter {

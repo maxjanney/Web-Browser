@@ -2,8 +2,6 @@ package edu.temple.assign7;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.pdf.PdfDocument;
-import android.graphics.pdf.PdfRenderer;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,15 +10,11 @@ import androidx.fragment.app.Fragment;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.ServiceWorkerWebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
-import java.io.Serializable;
 
 public class PageViewerFragment extends Fragment implements Parcelable {
 

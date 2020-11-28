@@ -4,7 +4,8 @@
     <string name="search_desc">Search</string>
     <string name="back_desc">Back</string>
     <string name="forward_desc">Forward</string>
-    <string name="ok">Ok</string>
+    <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="dialog">Delete %1$s</string>
+    <string name="confirmation">Saving bookmark!</string>
 </resources>

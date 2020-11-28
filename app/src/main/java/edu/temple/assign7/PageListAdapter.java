@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 public class PageListAdapter extends BaseAdapter {

@@ -1,12 +1,9 @@
 package edu.temple.assign7;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.ListView;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -21,7 +18,7 @@ public class BookmarkActivity extends AppCompatActivity {
 
         titles = new ArrayList<>();
         urls = new ArrayList<>();
-
+        
         loadTitlesAndUrls();
 
         ListView bookmarks = findViewById(R.id.bookmarks);
@@ -31,7 +28,6 @@ public class BookmarkActivity extends AppCompatActivity {
 
     private void loadTitlesAndUrls() {
         SharedPreferences preferences = getSharedPreferences(KeyUtils.FILE_KEY, 0);
-
         for (Map.Entry<String, ?> entry : preferences.getAll().entrySet()) {
             titles.add(entry.getKey());
             urls.add(entry.getValue().toString());
