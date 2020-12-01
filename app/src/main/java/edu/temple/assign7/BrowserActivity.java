@@ -160,7 +160,11 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
             share.setAction(Intent.ACTION_SEND);
             share.putExtra(Intent.EXTRA_TEXT, currUrl);
             share.setType("text/plain");
-            startActivity(share);
+
+            Intent chooser = Intent.createChooser(share, getString(R.string.action_share));
+            if (share.resolveActivity(getPackageManager()) != null) {
+                startActivity(chooser);
+            }
         }
     }
 
