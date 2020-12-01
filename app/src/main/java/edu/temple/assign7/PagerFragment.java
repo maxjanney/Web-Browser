@@ -113,11 +113,19 @@ public class PagerFragment extends Fragment {
     }
 
     public String getCurrentUrl() {
-        return getPageViewer(viewPager.getCurrentItem()).getUrl();
+        if (pages.size() > 0) {
+            return getPageViewer(viewPager.getCurrentItem()).getUrl();
+        } else {
+            return null;
+        }
     }
 
     public String getCurrentTitle() {
-        return getPageViewer(viewPager.getCurrentItem()).getTitle();
+        if (pages.size() > 0) {
+            return getPageViewer(viewPager.getCurrentItem()).getTitle();
+        } else {
+            return null;
+        }
     }
 
     private PageViewerFragment getPageViewer(int position) {

@@ -14,6 +14,9 @@ import androidx.fragment.app.FragmentManager;
 import java.util.ArrayList;
 
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -107,6 +110,60 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
         outState.putSerializable(KeyUtils.PAGES_KEY, pages);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.share:
+                // create intent to share title and url
+                shareUrl();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == KeyUtils.LAUNCH_BOOKMARK_ACTIVITY && resultCode == Activity.RESULT_OK) {
+            Bundle extras = null;
+
+            if (data != null) {
+                extras = data.getExtras();
+            }
+            String url = "";
+
+            if (extras != null) {
+                url = extras.getString(KeyUtils.URL_RESULT_KEY);
+            }
+
+            // display the corresponding
+            // url in the current page
+            go(url);
+        }
+    }
+
+    private void shareUrl() {
+        Intent share = new Intent();
+
+        String currUrl = pagerFragment.getCurrentUrl();
+
+        // only send non-empty url
+        if (currUrl != null && !currUrl.isEmpty()) {
+            share.setAction(Intent.ACTION_SEND);
+            share.putExtra(Intent.EXTRA_TEXT, currUrl);
+            share.setType("text/plain");
+            startActivity(share);
+        }
+    }
+
     private void clearIdentifiers() {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("");
@@ -174,17 +231,15 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
 
     @Override
     public void savePage() {
-        if (pages.size() > 0) {
-            String title = pagerFragment.getCurrentTitle();
-            String url = pagerFragment.getCurrentUrl();
+        String title = pagerFragment.getCurrentTitle();
+        String url = pagerFragment.getCurrentUrl();
 
-            if (title != null && url != null && !title.isEmpty() && !url.isEmpty()) {
-                getSharedPreferences(KeyUtils.FILE_KEY, 0)
-                        .edit()
-                        .putString(title, url)
-                        .apply();
-                Toast.makeText(BrowserActivity.this, getString(R.string.confirmation), Toast.LENGTH_SHORT).show();
-            }
+        if (title != null && url != null && !title.isEmpty() && !url.isEmpty()) {
+            getSharedPreferences(KeyUtils.FILE_KEY, 0)
+                    .edit()
+                    .putString(title, url)
+                    .apply();
+            Toast.makeText(BrowserActivity.this, getString(R.string.confirmation), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -196,26 +251,5 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
     @Override
     public void pageSelected(int position) {
         pagerFragment.showPage(position);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == KeyUtils.LAUNCH_BOOKMARK_ACTIVITY && resultCode == Activity.RESULT_OK) {
-            Bundle extras = null;
-
-            if (data != null) {
-                extras = data.getExtras();
-            }
-            String url = "";
-
-            if (extras != null) {
-                url = extras.getString(KeyUtils.URL_RESULT_KEY);
-            }
-
-            // display the corresponding
-            // url in the current page
-            go(url);
-        }
     }
 }

@@ -8,4 +8,5 @@
     <string name="cancel">Cancel</string>
     <string name="dialog">Delete %1$s</string>
     <string name="confirmation">Saving bookmark!</string>
+    <string name="action_share">Share</string>
 </resources>
