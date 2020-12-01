@@ -30,17 +30,19 @@ public class PagerFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof PagerInterface)
+        if (context instanceof PagerInterface) {
             browserActivity = (PagerInterface) context;
-        else
+        } else {
             throw new RuntimeException("You must implement PagerInterface to attach this fragment");
+        }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null)
+        if (getArguments() != null) {
             pages = (ArrayList) getArguments().getSerializable(KeyUtils.PAGES_ARG_KEY);
+        }
     }
 
     @Override
@@ -65,10 +67,11 @@ public class PagerFragment extends Fragment {
 
             @Override
             public int getItemPosition(@NonNull Object object) {
-                if (pages.contains(object))
+                if (pages.contains(object)) {
                     return pages.indexOf(object);
-                else
+                } else {
                     return POSITION_NONE;
+                }
             }
         });
 

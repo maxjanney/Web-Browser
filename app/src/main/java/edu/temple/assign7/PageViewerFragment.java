@@ -20,7 +20,7 @@ public class PageViewerFragment extends Fragment implements Parcelable {
 
     private static final int MAX_TITLE_LEN = 30;
 
-    WebView webView;
+    private WebView webView;
     private PageViewerInterface browserActivity;
 
     private String url;
@@ -36,17 +36,19 @@ public class PageViewerFragment extends Fragment implements Parcelable {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof PageViewerInterface)
+        if (context instanceof PageViewerInterface) {
             browserActivity = (PageViewerInterface) context;
-        else
+        } else {
             throw new RuntimeException("You must implement PageViewerInterface to attach this fragment");
+        }
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null)
+        if (getArguments() != null) {
             url = getArguments().getString(KeyUtils.URL_ARG_KEY);
+        }
     }
 
     @Override
@@ -71,13 +73,14 @@ public class PageViewerFragment extends Fragment implements Parcelable {
             }
         });
 
-        if (savedInstanceState != null)
+        if (savedInstanceState != null) {
             webView.restoreState(savedInstanceState);
-        else {
-            if (url != null)
+        } else {
+            if (url != null) {
                 webView.loadUrl(url);
-            else
+            } else {
                 browserActivity.updateUrl("");
+            }
         }
 
         return root;
@@ -105,25 +108,29 @@ public class PageViewerFragment extends Fragment implements Parcelable {
         String title;
         if (webView != null) {
             title = webView.getTitle();
-            if (title == null || title.isEmpty())
+            if (title == null || title.isEmpty()) {
                 return webView.getUrl();
-            else
+            } else {
                 return shorten(title);
-        } else
+            }
+        } else {
             return "Blank Page";
+        }
     }
 
     private String shorten(String title) {
-        if (title.length() > MAX_TITLE_LEN)
+        if (title.length() > MAX_TITLE_LEN) {
             title = title.substring(0, MAX_TITLE_LEN);
+        }
         return title;
     }
 
     public String getUrl() {
-        if (webView != null)
+        if (webView != null) {
             return webView.getUrl();
-        else
+        } else {
             return "";
+        }
     }
 
     @Override

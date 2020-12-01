@@ -33,17 +33,19 @@ public class PageListFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof PageListInterface)
+        if (context instanceof PageListInterface) {
             browserActivity = (PageListInterface) context;
-        else
+        } else {
             throw new RuntimeException("You must implement PageListInterface before attaching this fragment");
+        }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null)
+        if (getArguments() != null) {
             pages = (ArrayList) getArguments().getSerializable(KeyUtils.PAGES_ARG_KEY);
+        }
     }
 
     @Override
@@ -66,8 +68,9 @@ public class PageListFragment extends Fragment {
     }
 
     public void notifyWebsitesChanged() {
-        if (listView != null)
+        if (listView != null) {
             ((BaseAdapter) listView.getAdapter()).notifyDataSetChanged();
+        }
     }
 
     interface PageListInterface {

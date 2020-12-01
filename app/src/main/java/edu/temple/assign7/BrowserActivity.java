@@ -2,6 +2,7 @@ package edu.temple.assign7;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,6 +12,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import java.util.ArrayList;
+
+import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -35,10 +38,11 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (savedInstanceState != null)
+        if (savedInstanceState != null) {
             pages = (ArrayList<PageViewerFragment>) savedInstanceState.getSerializable(KeyUtils.PAGES_KEY);
-        else
+        } else {
             pages = new ArrayList<>();
+        }
 
         fm = getSupportFragmentManager();
 
@@ -46,27 +50,27 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
 
         Fragment tmpFragment;
 
-        if ((tmpFragment = fm.findFragmentById(R.id.page_control)) instanceof PageControlFragment)
+        if ((tmpFragment = fm.findFragmentById(R.id.page_control)) instanceof PageControlFragment) {
             pageControlFragment = (PageControlFragment) tmpFragment;
-        else {
+        } else {
             pageControlFragment = new PageControlFragment();
             fm.beginTransaction()
                     .add(R.id.page_control, pageControlFragment)
                     .commit();
         }
 
-        if ((tmpFragment = fm.findFragmentById(R.id.browser_control)) instanceof BrowserControlFragment)
+        if ((tmpFragment = fm.findFragmentById(R.id.browser_control)) instanceof BrowserControlFragment) {
             browserControlFragment = (BrowserControlFragment) tmpFragment;
-        else {
+        } else {
             browserControlFragment = new BrowserControlFragment();
             fm.beginTransaction()
                     .add(R.id.browser_control, browserControlFragment)
                     .commit();
         }
 
-        if ((tmpFragment = fm.findFragmentById(R.id.page_viewer)) instanceof PagerFragment)
+        if ((tmpFragment = fm.findFragmentById(R.id.page_viewer)) instanceof PagerFragment) {
             pagerFragment = (PagerFragment) tmpFragment;
-        else {
+        } else {
             pagerFragment = PagerFragment.newInstance(pages);
             fm.beginTransaction()
                     .add(R.id.page_viewer, pagerFragment)
@@ -74,13 +78,25 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
         }
 
         if (listMode) {
-            if ((tmpFragment = fm.findFragmentById(R.id.page_list)) instanceof PageListFragment)
+            if ((tmpFragment = fm.findFragmentById(R.id.page_list)) instanceof PageListFragment) {
                 pageListFragment = (PageListFragment) tmpFragment;
-            else {
+            } else {
                 pageListFragment = PageListFragment.newInstance(pages);
                 fm.beginTransaction()
                         .add(R.id.page_list, pageListFragment)
                         .commit();
+            }
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent launchUrl = getIntent();
+        if (launchUrl != null) {
+            Uri data = launchUrl.getData();
+            if (data != null) {
+                go(data.toString());
             }
         }
     }
@@ -92,23 +108,25 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
     }
 
     private void clearIdentifiers() {
-        if (getSupportActionBar() != null)
+        if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("");
+        }
         pageControlFragment.updateUrl("");
     }
 
     // Notify all observers of collections
     private void notifyWebsitesChanged() {
         pagerFragment.notifyWebsitesChanged();
-        if (listMode)
+        if (listMode) {
             pageListFragment.notifyWebsitesChanged();
+        }
     }
 
     @Override
     public void go(String url) {
-        if (pages.size() > 0)
+        if (pages.size() > 0) {
             pagerFragment.go(url);
-        else {
+        } else {
             pages.add(PageViewerFragment.newInstance(url));
             notifyWebsitesChanged();
             pagerFragment.showPage(pages.size() - 1);
@@ -136,8 +154,9 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
 
     @Override
     public void updateTitle(String title) {
-        if (title != null && title.equals(pagerFragment.getCurrentTitle()) && getSupportActionBar() != null)
+        if (title != null && title.equals(pagerFragment.getCurrentTitle()) && getSupportActionBar() != null) {
             getSupportActionBar().setTitle(title);
+        }
         notifyWebsitesChanged();
     }
 
@@ -182,17 +201,17 @@ public class BrowserActivity extends AppCompatActivity implements PageControlFra
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == KeyUtils.LAUNCH_BOOKMARK_ACTIVITY && resultCode == Activity.RESULT_OK) {
             Bundle extras = null;
 
-            if (data != null)
+            if (data != null) {
                 extras = data.getExtras();
-
+            }
             String url = "";
 
-            if (extras != null)
+            if (extras != null) {
                 url = extras.getString(KeyUtils.URL_RESULT_KEY);
+            }
 
             // display the corresponding
             // url in the current page

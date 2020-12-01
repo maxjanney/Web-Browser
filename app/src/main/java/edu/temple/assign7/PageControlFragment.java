@@ -1,6 +1,7 @@
 package edu.temple.assign7;
 
 import android.content.Context;
+import android.media.Image;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,7 +15,6 @@ import android.widget.TextView;
 
 public class PageControlFragment extends Fragment {
 
-    private ImageButton goButton, backButton, forwardButton;
     private TextView urlTextView;
 
     private PageControlInterface browserActivity;
@@ -22,10 +22,11 @@ public class PageControlFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof PageControlInterface)
+        if (context instanceof PageControlInterface) {
             browserActivity = (PageControlInterface) context;
-        else
+        } else {
             throw new RuntimeException("You must implement the required interface");
+        }
     }
 
     @Override
@@ -35,19 +36,21 @@ public class PageControlFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_page_control, container, false);
 
         urlTextView = root.findViewById(R.id.urlTextView);
-        goButton = root.findViewById(R.id.goButton);
-        backButton = root.findViewById(R.id.backButton);
-        forwardButton = root.findViewById(R.id.forwardButton);
+
+        final ImageButton goButton = root.findViewById(R.id.goButton);
+        final ImageButton backButton = root.findViewById(R.id.backButton);
+        final ImageButton forwardButton = root.findViewById(R.id.forwardButton);
 
         View.OnClickListener controlOcl = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (v.equals(goButton))
+                if (v.equals(goButton)) {
                     browserActivity.go(formatUrl(urlTextView.getText().toString()));
-                else if (v.equals(backButton))
+                } else if (v.equals(backButton)) {
                     browserActivity.back();
-                else if (v.equals(forwardButton))
+                } else if (v.equals(forwardButton)) {
                     browserActivity.forward();
+                }
             }
         };
 
@@ -63,10 +66,11 @@ public class PageControlFragment extends Fragment {
     }
 
     private String formatUrl(String url) {
-        if (!url.startsWith("http://") && !url.startsWith("https://"))
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
             return "https://" + url;
-        else
+        } else {
             return url;
+        }
     }
 
     interface PageControlInterface {

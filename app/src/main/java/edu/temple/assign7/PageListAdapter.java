@@ -39,9 +39,9 @@ public class PageListAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         TextView textView;
 
-        if (convertView instanceof TextView)
+        if (convertView instanceof TextView) {
             textView = (TextView) convertView;
-        else {
+        } else {
             textView = new TextView(context);
             textView.setPadding(5,8,8,5);
             textView.setGravity(Gravity.CENTER);

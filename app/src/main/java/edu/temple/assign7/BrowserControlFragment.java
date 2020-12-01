@@ -18,16 +18,16 @@ public class BrowserControlFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        if (context instanceof BrowserControlInterface)
+        if (context instanceof BrowserControlInterface) {
             browserActivity = (BrowserControlInterface) context;
-        else
+        } else {
             throw new RuntimeException("Cannot manage windows if interface BrowserControlInterface not implemented");
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         View root = inflater.inflate(R.layout.fragment_browser_control, container, false);
 
         final ImageButton newPageButton = root.findViewById(R.id.newPageButton);
@@ -37,12 +37,13 @@ public class BrowserControlFragment extends Fragment {
         View.OnClickListener browserControlClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (v.equals(newPageButton))
+                if (v.equals(newPageButton)) {
                     browserActivity.newPage();
-                else if (v.equals(savePageButton))
+                } else if (v.equals(savePageButton)) {
                     browserActivity.savePage();
-                else if (v.equals(bookmarksButton))
+                } else if (v.equals(bookmarksButton)) {
                     browserActivity.showBookmarks();
+                }
             }
         };
 
