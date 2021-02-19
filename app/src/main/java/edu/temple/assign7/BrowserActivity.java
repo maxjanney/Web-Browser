@@ -1,59 +1,259 @@
 package edu.temple.assign7;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
-public class BrowserActivity extends AppCompatActivity implements PageControlFragment.BrowserButtons,
-        PageViewerFragment.UpdateUrl {
+import java.util.ArrayList;
 
-    private PageViewerFragment pageViewer;
-    private PageControlFragment pageControl;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+
+public class BrowserActivity extends AppCompatActivity implements PageControlFragment.PageControlInterface,
+        PageViewerFragment.PageViewerInterface, BrowserControlFragment.BrowserControlInterface,
+        PagerFragment.PagerInterface, PageListFragment.PageListInterface {
+
+    FragmentManager fm;
+
+    PageControlFragment pageControlFragment;
+    BrowserControlFragment browserControlFragment;
+    PageListFragment pageListFragment;
+    PagerFragment pagerFragment;
+
+    ArrayList<PageViewerFragment> pages;
+
+    boolean listMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (savedInstanceState == null) {
-            pageViewer = new PageViewerFragment();
-            pageControl = new PageControlFragment();
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.page_control, pageControl)
-                    .add(R.id.page_viewer, pageViewer)
-                    .commit();
+        if (savedInstanceState != null) {
+            pages = (ArrayList<PageViewerFragment>) savedInstanceState.getSerializable(KeyUtils.PAGES_KEY);
         } else {
-            pageViewer = (PageViewerFragment) getSupportFragmentManager().getFragment(savedInstanceState, "pageViewer");
-            pageControl = (PageControlFragment) getSupportFragmentManager().getFragment(savedInstanceState, "pageControl");
+            pages = new ArrayList<>();
+        }
+
+        fm = getSupportFragmentManager();
+
+        listMode = findViewById(R.id.page_list) != null;
+
+        Fragment tmpFragment;
+
+        if ((tmpFragment = fm.findFragmentById(R.id.page_control)) instanceof PageControlFragment) {
+            pageControlFragment = (PageControlFragment) tmpFragment;
+        } else {
+            pageControlFragment = new PageControlFragment();
+            fm.beginTransaction()
+                    .add(R.id.page_control, pageControlFragment)
+                    .commit();
+        }
+
+        if ((tmpFragment = fm.findFragmentById(R.id.browser_control)) instanceof BrowserControlFragment) {
+            browserControlFragment = (BrowserControlFragment) tmpFragment;
+        } else {
+            browserControlFragment = new BrowserControlFragment();
+            fm.beginTransaction()
+                    .add(R.id.browser_control, browserControlFragment)
+                    .commit();
+        }
+
+        if ((tmpFragment = fm.findFragmentById(R.id.page_viewer)) instanceof PagerFragment) {
+            pagerFragment = (PagerFragment) tmpFragment;
+        } else {
+            pagerFragment = PagerFragment.newInstance(pages);
+            fm.beginTransaction()
+                    .add(R.id.page_viewer, pagerFragment)
+                    .commit();
+        }
+
+        if (listMode) {
+            if ((tmpFragment = fm.findFragmentById(R.id.page_list)) instanceof PageListFragment) {
+                pageListFragment = (PageListFragment) tmpFragment;
+            } else {
+                pageListFragment = PageListFragment.newInstance(pages);
+                fm.beginTransaction()
+                        .add(R.id.page_list, pageListFragment)
+                        .commit();
+            }
         }
     }
 
     @Override
-    public void onSaveInstanceState(@NonNull Bundle outState) {
+    protected void onStart() {
+        super.onStart();
+        Intent launchUrl = getIntent();
+        if (launchUrl != null) {
+            Uri data = launchUrl.getData();
+            if (data != null) {
+                go(data.toString());
+            }
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        getSupportFragmentManager().putFragment(outState, "pageViewer", pageViewer);
-        getSupportFragmentManager().putFragment(outState, "pageControl", pageControl);
+        outState.putSerializable(KeyUtils.PAGES_KEY, pages);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.share:
+                // create intent to share title and url
+                shareUrl();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == KeyUtils.LAUNCH_BOOKMARK_ACTIVITY && resultCode == Activity.RESULT_OK) {
+            Bundle extras = null;
+
+            if (data != null) {
+                extras = data.getExtras();
+            }
+            String url = "";
+
+            if (extras != null) {
+                url = extras.getString(KeyUtils.URL_RESULT_KEY);
+            }
+
+            // display the corresponding
+            // url in the current page
+            go(url);
+        }
+    }
+
+    private void shareUrl() {
+        Intent share = new Intent();
+
+        String currUrl = pagerFragment.getCurrentUrl();
+
+        // only send non-empty url
+        if (currUrl != null && !currUrl.isEmpty()) {
+            share.setAction(Intent.ACTION_SEND);
+            share.putExtra(Intent.EXTRA_TEXT, currUrl);
+            share.setType("text/plain");
+
+            Intent chooser = Intent.createChooser(share, getString(R.string.action_share));
+            if (share.resolveActivity(getPackageManager()) != null) {
+                startActivity(chooser);
+            }
+        }
+    }
+
+    private void clearIdentifiers() {
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle("");
+        }
+        pageControlFragment.updateUrl("");
+    }
+
+    // Notify all observers of collections
+    private void notifyWebsitesChanged() {
+        pagerFragment.notifyWebsitesChanged();
+        if (listMode) {
+            pageListFragment.notifyWebsitesChanged();
+        }
+    }
+
+    @Override
+    public void go(String url) {
+        if (pages.size() > 0) {
+            pagerFragment.go(url);
+        } else {
+            pages.add(PageViewerFragment.newInstance(url));
+            notifyWebsitesChanged();
+            pagerFragment.showPage(pages.size() - 1);
+        }
+    }
+
+    @Override
+    public void back() {
+        pagerFragment.back();
+    }
+
+    @Override
+    public void forward() {
+        pagerFragment.forward();
     }
 
     @Override
     public void updateUrl(String url) {
-        pageControl.setUrl(url);
+        if (url != null && url.equals(pagerFragment.getCurrentUrl())) {
+            pageControlFragment.updateUrl(url);
+            // Update the ListView in the PageListFragment - results in updated titles
+            notifyWebsitesChanged();
+        }
     }
 
     @Override
-    public void loadUrl(String url) {
-        pageViewer.loadUrl(url);
+    public void updateTitle(String title) {
+        if (title != null && title.equals(pagerFragment.getCurrentTitle()) && getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(title);
+        }
+        notifyWebsitesChanged();
     }
 
     @Override
-    public void goBack() {
-        pageViewer.goBack();
+    public void newPage() {
+        // Add page to list
+        pages.add(new PageViewerFragment());
+        // Update all necessary views
+        notifyWebsitesChanged();
+        // Display the newly created page
+        pagerFragment.showPage(pages.size() - 1);
+        // Clear the displayed URL in PageControlFragment and title in the activity
+        clearIdentifiers();
     }
 
     @Override
-    public void goForward() {
-        pageViewer.goForward();
+    public void savePage() {
+        String title = pagerFragment.getCurrentTitle();
+        String url = pagerFragment.getCurrentUrl();
+
+        if (title != null && url != null && !title.isEmpty() && !url.isEmpty()) {
+            getSharedPreferences(KeyUtils.FILE_KEY, 0)
+                    .edit()
+                    .putString(title, url)
+                    .apply();
+            Toast.makeText(BrowserActivity.this, getString(R.string.confirmation), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void showBookmarks() {
+        startActivityForResult(new Intent(BrowserActivity.this, BookmarkActivity.class), KeyUtils.LAUNCH_BOOKMARK_ACTIVITY);
+    }
+
+    @Override
+    public void pageSelected(int position) {
+        pagerFragment.showPage(position);
     }
 }
